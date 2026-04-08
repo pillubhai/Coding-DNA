@@ -4,5 +4,5 @@ __pycache__/
 *.zip
 *.egg-info/
 .env
-wildfire_env_tmp/
-render/
+.qwen/
+.qodo/

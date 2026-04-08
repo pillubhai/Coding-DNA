@@ -1,175 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WildfireContainment-v0 Dashboard</title>
-    <!-- Tailwind CSS -->
+    <title>WildfireContainment-v0</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="style.css">
-    <!-- FontAwesome for Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/ui/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-200 min-h-screen font-inter overflow-x-hidden selection:bg-rose-500 selection:text-white">
 
-    <!-- Background decoration -->
-    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-rose-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-amber-500 rounded-full mix-blend-screen filter blur-[128px] opacity-10"></div>
+<body class="bg-[#0a0e1a] text-slate-200 min-h-screen font-inter">
+
+    <!-- Header -->
+    <header class="bg-[#0d1224]/80 backdrop-blur-md border-b border-white/5 px-6 py-3 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-fire-flame-curved text-orange-500 text-xl"></i>
+                <h1 class="text-lg font-semibold text-white tracking-tight">WildfireContainment<span
+                        class="text-orange-500">-v0</span></h1>
+            </div>
+            <div class="flex items-center gap-2 text-sm text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Agent Engine Connected</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Legend Bar -->
+    <div class="max-w-[1600px] mx-auto px-6 py-3">
+        <div class="flex items-center gap-6 text-xs text-slate-400">
+            <span class="flex items-center gap-1.5"><span class="text-sm">🌲</span> Forest</span>
+            <span class="flex items-center gap-1.5"><span class="text-sm">🔥</span> Fire</span>
+            <span class="flex items-center gap-1.5"><span class="w-3 h-2 bg-blue-500 rounded-sm"></span> Water</span>
+            <span class="flex items-center gap-1.5"><span class="text-sm">✈️</span> Tanker</span>
+            <span class="flex items-center gap-1.5"><span class="text-sm">🧑‍🚒</span> Crew</span>
+            <div class="ml-auto flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">
+                <i class="fa-solid fa-wind text-slate-400 text-xs"></i>
+                <span id="wind-text" class="text-xs font-medium text-slate-300">N 1.2x</span>
+            </div>
+        </div>
     </div>
 
-    <nav class="glass-panel border-b border-slate-800/50 p-4 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-fire text-rose-500 text-2xl animate-pulse"></i>
-                <h1 class="font-outfit font-bold text-2xl tracking-tight text-white shadow-sm">WildfireContainment<span class="text-rose-500">-v0</span></h1>
-            </div>
-            <div class="flex items-center space-x-4 text-sm font-semibold text-slate-400">
-                <div class="flex items-center gap-2">
-                    <span class="relative flex h-3 w-3">
-                        <span id="connection-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span id="connection-dot" class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </span>
-                    <span id="connection-status">Agent Engine Connected</span>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Main Content -->
+    <main class="max-w-[1600px] mx-auto px-6 pb-8 grid grid-cols-12 gap-6">
 
-    <main class="max-w-7xl mx-auto p-4 md:p-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        <!-- Left Column: Controls & Metrics -->
-        <div class="lg:col-span-4 space-y-6">
-            
-            <!-- Very Simple Legend Panel -->
-            <div class="glass-card rounded-2xl p-6 border border-slate-800/50 shadow-xl relative overflow-hidden group">
-                <h2 class="font-outfit text-xl font-semibold text-white mb-3 flex items-center gap-2">
-                    <i class="fa-solid fa-map-location-dot text-emerald-400"></i> Map Legend
-                </h2>
-                
-                <div class="grid grid-cols-2 gap-y-3 gap-x-2 text-sm text-slate-300 mb-5">
-                    <div class="flex items-center gap-2"><span class="w-4 h-4 bg-emerald-600 rounded-sm"></span> <b>Forest</b> (Can burn)</div>
-                    <div class="flex items-center gap-2"><span class="w-4 h-4 bg-slate-800 rounded-sm"></span> <b>Rocks</b> (Safe zone)</div>
-                    <div class="flex items-center gap-2"><span class="text-lg">🔥</span> <b>Wildfire</b></div>
-                    <div class="flex items-center gap-2"><span class="w-4 h-4 bg-blue-500 rounded-sm"></span> <b>Water Dropped</b></div>
-                    <div class="flex items-center gap-2"><span class="text-lg">🏘️</span> <b>Towns</b> (Protect!)</div>
-                    <div class="flex items-center gap-2"><span class="text-lg">✈️</span> <b>Air Tanker</b></div>
-                    <div class="flex items-center gap-2 w-full col-span-2"><span class="text-lg">🧑‍🚒</span> <b>Firefighters</b> (Ground Crew)</div>
-                </div>
+        <!-- Left Sidebar -->
+        <div class="col-span-12 lg:col-span-3 space-y-5">
 
-                <div class="bg-indigo-900/30 border border-indigo-500/30 rounded-lg p-3 text-sm text-slate-300">
-                    <strong class="text-indigo-300 block mb-1">🎮 How to Play:</strong>
-                    <ol class="list-decimal pl-4 space-y-1">
-                        <li>Pick a difficulty level below.</li>
-                        <li>Click <b>Reset Map</b> to generate a new forest.</li>
-                        <li>Click <b>Start Auto-Play</b> to watch the AI team work together to put out the fire before it destroys the towns!</li>
-                    </ol>
-                </div>
-            </div>
-
-            <!-- Stats Panel (Simplified) -->
-            <div class="glass-card rounded-2xl p-6 border border-slate-800/50 shadow-xl">
-                <div class="grid grid-cols-2 gap-3 mb-6">
-                    <div class="metric-box">
-                        <div class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Step</div>
-                        <div id="metric-step" class="text-2xl font-outfit text-white">0</div>
+            <!-- Stats -->
+            <div class="bg-[#111827] rounded-xl border border-white/5 p-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white/[0.03] rounded-lg p-3">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1">Step</div>
+                        <div id="metric-step" class="text-xl font-semibold text-white">0</div>
                     </div>
-                    <div class="metric-box">
-                        <div class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Total Reward</div>
-                        <div id="metric-reward" class="text-2xl font-outfit text-emerald-400">0.00</div>
+                    <div class="bg-white/[0.03] rounded-lg p-3">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1">Reward</div>
+                        <div id="metric-reward" class="text-xl font-semibold text-emerald-400">0.00</div>
                     </div>
-                    <div class="metric-box">
-                        <div class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Structures</div>
-                        <div id="metric-structures" class="text-2xl font-outfit text-cyan-400">0</div>
+                    <div class="bg-white/[0.03] rounded-lg p-3">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1">Structures
+                        </div>
+                        <div id="metric-structures" class="text-xl font-semibold text-cyan-400">0</div>
                     </div>
-                    <div class="metric-box">
-                        <div class="text-xs text-slate-500 uppercase font-bold tracking-wider mb-1">Fire Volume</div>
-                        <div id="metric-fire" class="text-2xl font-outfit text-rose-500">0</div>
+                    <div class="bg-white/[0.03] rounded-lg p-3">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-medium mb-1">Fire Cells
+                        </div>
+                        <div id="metric-fire" class="text-xl font-semibold text-red-400">0</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Control Panel -->
-            <div class="glass-card rounded-2xl p-6 border border-slate-800/50 shadow-xl">
-                <h2 class="font-outfit text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-gamepad text-indigo-400"></i> Environment Controls
-                </h2>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs text-slate-500 uppercase font-bold tracking-wider mb-2">Difficulty Configuration</label>
-                        <select id="select-difficulty" title="Select Difficulty" aria-label="Select Difficulty" class="w-full bg-slate-900/50 border border-slate-700 text-slate-200 text-sm rounded-lg focus:ring-rose-500 focus:border-rose-500 block p-2.5 transition-all outline-none appearance-none">
-                            <option value="easy">Level 1: Easy (5 Structures)</option>
-                            <option value="medium" selected>Level 2: Medium (10 Structures)</option>
-                            <option value="hard">Level 3: Hard (20 Structures)</option>
-                        </select>
-                    </div>
-                    
-                    <div class="flex gap-3 pt-2">
-                        <button id="btn-reset" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 border border-slate-700 hover:border-slate-500 shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-rotate-right"></i> Reset Map
-                        </button>
-                        <button id="btn-step" class="flex-1 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-bold py-2.5 px-4 rounded-lg transition-all duration-200 shadow-[0_0_15px_rgba(225,29,72,0.4)] flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-forward-step"></i> Manual Step
-                        </button>
-                    </div>
-                    
-                    <button id="btn-auto" class="w-full bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 font-semibold py-2.5 px-4 rounded-lg transition-all duration-200 border border-indigo-500/30 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-play"></i> Start Auto-Play
+            <!-- Controls -->
+            <div class="bg-[#111827] rounded-xl border border-white/5 p-4">
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Difficulty</h3>
+                <select id="select-difficulty"
+                    class="w-full bg-white/[0.05] border border-white/10 text-sm text-slate-200 rounded-lg px-3 py-2 mb-4 focus:outline-none focus:border-orange-500/50">
+                    <option value="easy">Easy — 5 Structures</option>
+                    <option value="medium" selected>Medium — 10 Structures</option>
+                    <option value="hard">Hard — 20 Structures</option>
+                </select>
+                <div class="flex gap-2">
+                    <button id="btn-reset"
+                        class="flex-1 bg-white/[0.06] hover:bg-white/[0.1] text-sm font-medium text-slate-200 py-2 rounded-lg border border-white/10 transition-colors">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Reset
+                    </button>
+                    <button id="btn-step"
+                        class="flex-1 bg-orange-600 hover:bg-orange-500 text-sm font-medium text-white py-2 rounded-lg transition-colors">
+                        <i class="fa-solid fa-forward-step mr-1"></i> Step
                     </button>
                 </div>
+                <button id="btn-auto"
+                    class="w-full mt-2 bg-white/[0.06] hover:bg-white/[0.1] text-sm font-medium text-slate-200 py-2 rounded-lg border border-white/10 transition-colors">
+                    <i class="fa-solid fa-play mr-1"></i> Auto-Play
+                </button>
             </div>
 
-            <!-- Agent Status Panel -->
-            <div class="glass-card rounded-2xl p-6 border border-slate-800/50 shadow-xl">
-                <h2 class="font-outfit text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-users text-amber-400"></i> Unit Telemetry
-                </h2>
-                <div id="unit-container" class="space-y-3">
-                    <!-- Populated by JS -->
-                </div>
+            <!-- Agent Status -->
+            <div class="bg-[#111827] rounded-xl border border-white/5 p-4">
+                <h3 class="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">Units</h3>
+                <div id="unit-container" class="space-y-2"></div>
+            </div>
+
+            <!-- How to Play -->
+            <div class="bg-indigo-900/20 rounded-xl border border-indigo-500/20 p-4">
+                <h3 class="text-xs uppercase tracking-wider text-indigo-400 font-semibold mb-2">How to Play</h3>
+                <ol class="text-xs text-slate-400 space-y-1 list-decimal pl-4">
+                    <li>Select difficulty level</li>
+                    <li>Click <b class="text-slate-300">Reset</b> to generate a new map</li>
+                    <li>Click <b class="text-slate-300">Auto-Play</b> to watch AI respond</li>
+                </ol>
             </div>
 
         </div>
 
-        <!-- Right Column: Visualization Grid -->
-        <div class="lg:col-span-8 flex flex-col items-center">
-            
-            <div class="w-full flex justify-between items-center mb-4 px-2">
-                <div class="flex gap-4 text-xs font-semibold tracking-wider text-slate-400 uppercase">
-                    <span class="flex items-center gap-2"><span class="w-3 h-3 bg-emerald-600 rounded-sm"></span> Forest</span>
-                    <span class="flex items-center gap-2"><span class="text-base leading-none">🔥</span> Fire</span>
-                    <span class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> Water</span>
-                    <span class="flex items-center gap-2"><span class="text-base leading-none">✈️</span> Tanker</span>
-                    <span class="flex items-center gap-2"><span class="text-base leading-none">🧑‍🚒</span> Crew</span>
-                </div>
-                
-                <div id="wind-indicator" class="glass-panel px-4 py-1.5 rounded-full flex items-center gap-2 border border-slate-700">
-                    <i class="fa-solid fa-wind text-slate-300"></i>
-                    <span class="text-sm font-semibold" id="wind-text">N 1.2x</span>
+        <!-- Grid Area -->
+        <div class="col-span-12 lg:col-span-9">
+            <div class="bg-[#111827] rounded-xl border border-white/5 p-1">
+                <div id="grid"
+                    style="display:grid;grid-template-columns:repeat(20,1fr);grid-template-rows:repeat(20,1fr);aspect-ratio:1/1;width:100%;gap:1px;background:rgba(255,255,255,0.03);border-radius:8px;overflow:hidden">
                 </div>
             </div>
-
-            <div class="w-full aspect-square max-w-[800px] glass-panel rounded-2xl border-2 border-slate-800/80 p-2 shadow-2xl relative">
-                <!-- Overlay for Game Over state -->
-                <div id="game-overlay" class="absolute inset-0 z-40 bg-slate-950/80 backdrop-blur-sm rounded-2xl flex flex-col justify-center items-center opacity-0 pointer-events-none transition-opacity duration-500">
-                    <h2 id="overlay-title" class="font-outfit text-4xl font-bold text-white mb-2 shadow-sm shrink-0 drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">Mission Complete</h2>
-                    <p id="overlay-desc" class="text-slate-300 text-lg">Fire Contained</p>
-                    <button id="btn-overlay-reset" class="mt-6 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 px-6 rounded-lg shadow-lg pointer-events-auto transition-colors">Play Again</button>
-                </div>
-                
-                <!-- 20x20 Grid Container -->
-                <div id="grid" class="w-full h-full grid grid-cols-20 grid-rows-20 gap-px bg-slate-900 overflow-hidden rounded-xl">
-                    <!-- Cells generated by JS -->
-                </div>
-            </div>
-            
         </div>
+
     </main>
 
-    <script src="app.js"></script>
+    <!-- Game Over Overlay -->
+    <div id="game-overlay"
+        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-opacity">
+        <div class="bg-[#111827] rounded-2xl border border-white/10 p-8 text-center max-w-sm">
+            <h2 id="overlay-title" class="text-2xl font-semibold text-white mb-2">Mission Complete</h2>
+            <p id="overlay-desc" class="text-slate-400 mb-6">Fire Contained</p>
+            <button id="btn-overlay-reset"
+                class="bg-orange-600 hover:bg-orange-500 text-white font-medium py-2 px-6 rounded-lg transition-colors">Play
+                Again</button>
+        </div>
+    </div>
+
+    <script src="/ui/app.js"></script>
 </body>
+
 </html>

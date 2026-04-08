@@ -33,8 +33,9 @@ class WildfireEnv(Environment):
         Reset the environment state and episode trackers.
         """
         self._env_state.reset(seed=seed)
+        self._env_state.total_reward = 0.0
         self._state = State(episode_id=str(uuid4()), step_count=0)
-        
+
         return self._get_observation(reward=0.0, done=False)
 
     def step(self, action: WildfireAction) -> WildfireObservation: # type: ignore
@@ -127,25 +128,27 @@ class WildfireEnv(Environment):
         Required by OpenEnv spec.
         """
         diff_conf = getattr(Config, self.difficulty.upper())
+        fire_cells = int(np.sum(self._env_state.fire > 0.1))
+        struct_remaining = int(np.sum(self._env_state.structures))
         return {
             "episode_id": self._state.episode_id,
-            "step": self._state.step_count,
+            "step": int(self._state.step_count),
             "difficulty": self.difficulty,
-            "grid_size": Config.GRID_SIZE,
-            "max_steps": Config.MAX_STEPS,
+            "grid_size": int(Config.GRID_SIZE),
+            "max_steps": int(Config.MAX_STEPS),
             "wind_dir": int(self._env_state.wind_dir),
             "wind_speed": float(self._env_state.wind_speed),
             "agents": [
                 {
                     "type": a["type"],
-                    "pos": a["pos"],
+                    "pos": [int(a["pos"][0]), int(a["pos"][1])],
                     "resource": float(a["resource"])
                 }
                 for a in self._env_state.agents
             ],
-            "fire_cells": int(np.sum(self._env_state.fire > 0.1)),
-            "structures_remaining": int(np.sum(self._env_state.structures)),
-            "initial_structures": diff_conf["num_structures"],
-            "terminated": self._env_state.fire is not None and np.sum(self._env_state.fire) <= 0,
-            "cumulative_reward": float(self._env_state.total_reward),
+            "fire_cells": fire_cells,
+            "structures_remaining": struct_remaining,
+            "initial_structures": int(diff_conf["num_structures"]),
+            "terminated": bool(fire_cells == 0),
+            "cumulative_reward": float(getattr(self._env_state, "total_reward", 0.0)),
         }

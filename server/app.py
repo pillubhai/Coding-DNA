@@ -2,11 +2,10 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from openenv.core.env_server.http_server import create_app
+from fastapi import FastAPI, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from fastapi import Query
 
 try:
     from models import WildfireAction, WildfireObservation
@@ -21,14 +20,15 @@ except (ImportError, ValueError):
 
 import numpy as np
 
+# ── Persistent single env instance ───────────────────────────────────────────
 env = WildfireEnv(difficulty="medium")
+baseline_agent = BaselineAgent()
 
-app = create_app(
-    WildfireEnv,
-    WildfireAction,
-    WildfireObservation,
-    env_name="WildfireContainment-v0",
-    max_concurrent_envs=1,
+# ── App ──────────────────────────────────────────────────────────────────────
+app = FastAPI(
+    title="WildfireContainment-v0",
+    description="A dynamic wildfire suppression environment for agentic RL.",
+    version="0.1.0",
 )
 
 app.add_middleware(
@@ -43,9 +43,38 @@ frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__fi
 if os.path.isdir(frontend_dir):
     app.mount("/ui", StaticFiles(directory=frontend_dir, html=True), name="frontend")
 
-baseline_agent = BaselineAgent()
+
+# ── Core endpoints: /reset, /step (persistent state) ─────────────────────────
+@app.post("/reset")
+async def reset_env():
+    """Reset the environment. Structures stay the same across subsequent /step calls."""
+    obs = env.reset()
+    return {
+        "observation": obs.model_dump(),
+        "reward": obs.reward,
+        "done": obs.done,
+    }
 
 
+@app.post("/step")
+async def step_env(request: Request):
+    """Step the SAME environment instance so structures persist across clicks."""
+    body = await request.json()
+    # Support both {"action": {"actions": [...]}} and {"actions": [...]}
+    if "action" in body:
+        actions = body["action"].get("actions", [])
+    else:
+        actions = body.get("actions", [])
+    action = WildfireAction(actions=actions)
+    obs = env.step(action)
+    return {
+        "observation": obs.model_dump(),
+        "reward": obs.reward,
+        "done": obs.done,
+    }
+
+
+# ── Info & utility endpoints ─────────────────────────────────────────────────
 @app.get("/tasks")
 async def get_tasks():
     return {
@@ -83,6 +112,21 @@ async def get_grader():
             "initial_structures": initial_structures,
             "fire_cells": fire_cells,
         }
+    }
+
+
+@app.post("/act")
+async def get_agent_action(request: Request):
+    """Get the baseline agent's next action for the current observation."""
+    obs = env._get_observation(reward=0.0, done=False)
+    action = baseline_agent.act(obs)
+    # Return raw actions list
+    return {
+        "actions": [
+            {"move": a.move if hasattr(a, 'move') else a.get('move', 8),
+             "act": a.act if hasattr(a, 'act') else a.get('act', False)}
+            for a in action.actions
+        ]
     }
 
 

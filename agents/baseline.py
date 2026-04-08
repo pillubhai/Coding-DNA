@@ -95,8 +95,8 @@ def _find_nearest_burning(fire_grid, pos):
 
 def _needs_refill(unit):
     if unit["type"] == "tanker":
-        return unit["resource"] < 2.0
-    return unit["resource"] < 10.0
+        return unit["resource"] < 1.0
+    return unit["resource"] < 5.0
 
 
 def _at_base(unit):
@@ -105,11 +105,22 @@ def _at_base(unit):
     return r == 0 or c == 0
 
 
+def _find_largest_fire_cluster(fire_grid):
+    """Find the biggest fire cluster center."""
+    fire_arr = np.array(fire_grid)
+    burning = np.argwhere(fire_arr > 0.1)
+    if len(burning) == 0:
+        return None
+    # Return centroid of all burning cells
+    return [int(np.mean(burning[:, 0])), int(np.mean(burning[:, 1]))]
+
+
 class BaselineAgent:
     """
-    Greedy heuristic agent:
-    - Tanker: flies toward fire near structures, drops water, refills at edge.
-    - Crew1 & Crew2: move toward nearest fire, suppress.
+    Aggressive wildfire suppression agent:
+    - Tanker: flies to fire near structures, drops water aggressively.
+    - Crew1 & Crew2: rush to nearest fire, suppress even from adjacent cells.
+    - Crews ONLY refill when nearly empty.
     Works reasonably on easy/medium. Fails on hard (by design per PRD).
     """
 
@@ -117,6 +128,8 @@ class BaselineAgent:
         fire_grid = obs.fire_grid
         structure_grid = obs.structure_grid
         units = obs.units
+        fire_arr = np.array(fire_grid)
+        fire_count = int(np.sum(fire_arr > 0.1))
 
         actions = []
 
@@ -127,8 +140,8 @@ class BaselineAgent:
                 "resource": unit.resource,
             }
 
+            # Only refill when almost completely empty
             if _needs_refill(unit_dict) and not _at_base(unit_dict):
-                # Move toward top-left corner (base)
                 move = _best_move_toward(unit_dict["pos"], [0, 0])
                 actions.append(UnitAction(move=move, act=False))
                 continue
@@ -141,23 +154,27 @@ class BaselineAgent:
                     actions.append(UnitAction(move=8, act=False))
                     continue
                 if unit_dict["pos"] == target:
-                    # Drop water
                     actions.append(UnitAction(move=8, act=True))
                 else:
                     move = _best_move_toward(unit_dict["pos"], target)
-                    # Drop while adjacent to fire
+                    # Drop water when adjacent or on target
                     dist = abs(unit_dict["pos"][0] - target[0]) + abs(unit_dict["pos"][1] - target[1])
-                    act = dist <= 1 and unit.resource >= 2.0
+                    act = dist <= 2 and unit.resource >= 2.0
                     actions.append(UnitAction(move=move, act=act))
 
-            else:  # ground_crew
+            else:  # ground_crew — AGGRESSIVE
                 target = _find_nearest_burning(fire_grid, unit_dict["pos"])
                 if target is None:
                     actions.append(UnitAction(move=8, act=False))
                     continue
-                if unit_dict["pos"] == target:
+
+                dist = abs(unit_dict["pos"][0] - target[0]) + abs(unit_dict["pos"][1] - target[1])
+
+                if dist <= 1:
+                    # On or adjacent to fire — SUPPRESS NOW
                     actions.append(UnitAction(move=8, act=True))
                 else:
+                    # Rush toward fire, don't waste stamina
                     move = _best_move_toward(unit_dict["pos"], target)
                     actions.append(UnitAction(move=move, act=False))
 
