@@ -6,6 +6,6 @@ matplotlib>=3.7.0
 openenv-core>=0.2.3
 pytest>=7.4.0
 python-multipart
-# Additional dependencies for OpenEnv Web Interface (if needed)
 jinja2
 websockets
+openai
