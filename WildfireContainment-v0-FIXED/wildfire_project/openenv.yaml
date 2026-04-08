@@ -1,0 +1,50 @@
+name: WildfireContainment-v0
+version: 0.1.0
+description: >
+  A dynamic wildfire suppression environment for agentic RL.
+  An AI agent controls 1 Air Tanker and 2 Ground Crews on a 20x20 grid
+  to contain fire spread, protect structures, and manage limited resources
+  under wind and stochastic spot-fire conditions.
+author: "Aryan"
+license: "BSD-3-Clause"
+
+env_type: "GridEnvironment"
+
+action_space:
+  type: "object"
+  description: "Actions for 3 units: [Tanker, Crew1, Crew2]"
+
+observation_space:
+  type: "object"
+  fields:
+    fuel_grid: "List[List[float]] 20x20"
+    fire_grid: "List[List[float]] 20x20"
+    moisture_grid: "List[List[float]] 20x20"
+    structure_grid: "List[List[int]] 20x20"
+    units: "List[UnitStatus]"
+    wind_dir: "int 0-7"
+    wind_speed: "float"
+
+tasks:
+  - id: easy
+    difficulty: 0.2
+    description: "Low fire spread (ignition 0.05), 5 structures, slow wind."
+  - id: medium
+    difficulty: 0.5
+    description: "Moderate fire (ignition 0.12), 10 structures, variable wind."
+  - id: hard
+    difficulty: 1.0
+    description: "Intense spread (ignition 0.20), frequent spot fires, 20 structures."
+
+entrypoint: "server/app.py"
+port: 7860
+
+docker:
+  image: "python:3.11-slim"
+
+inference:
+  script: "inference.py"
+  env_vars:
+    - API_BASE_URL
+    - MODEL_NAME
+    - HF_TOKEN
