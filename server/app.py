@@ -169,3 +169,13 @@ async def root():
     if os.path.isfile(index):
         return FileResponse(index)
     return {"message": "WildfireContainment-v0 is running. See /docs for API."}
+
+
+def main():
+    """Entry point for the server."""
+    import uvicorn
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+
+
+if __name__ == "__main__":
+    main()

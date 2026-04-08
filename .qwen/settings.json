@@ -30,7 +30,8 @@
       "Bash(l *)",
       "Bash(@curl *)",
       "Bash(del *)",
-      "Bash(rmdir *)"
+      "Bash(rmdir *)",
+      "Bash(uv *)"
     ]
   },
   "$version": 3
