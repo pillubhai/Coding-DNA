@@ -127,8 +127,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
     cumulative_reward  = 0.0
 
     # ── [START] log ──────────────────────────────────────────────────────────
-    print(json.dumps({
-        "type":               "[START]",
+    start_data = json.dumps({
         "task_id":            task_id,
         "difficulty":         difficulty,
         "seed":               seed,
@@ -136,8 +135,8 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         "grid_size":          Config.GRID_SIZE,
         "max_steps":          Config.MAX_STEPS,
         "model":              MODEL_NAME,
-    }))
-    sys.stdout.flush()
+    })
+    print(f"[START] {start_data}", flush=True)
 
     step = 0
     while not obs.done and step < Config.MAX_STEPS:
@@ -151,8 +150,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         grader_score        = compute_grader_score(obs, initial_structures)
 
         # ── [STEP] log ───────────────────────────────────────────────────────
-        print(json.dumps({
-            "type":               "[STEP]",
+        step_data = json.dumps({
             "task_id":            task_id,
             "step":               step,
             "reward":             round(float(obs.reward), 4),
@@ -161,14 +159,13 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
             "fire_cells":         fire_cells,
             "structures":         structures_now,
             "grader_score":       grader_score,
-        }))
-        sys.stdout.flush()
+        })
+        print(f"[STEP] {step_data}", flush=True)
 
     final_score = compute_grader_score(obs, initial_structures)
 
     # ── [END] log ────────────────────────────────────────────────────────────
-    print(json.dumps({
-        "type":               "[END]",
+    end_data = json.dumps({
         "task_id":            task_id,
         "difficulty":         difficulty,
         "total_steps":        step,
@@ -178,8 +175,8 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         "initial_structures": initial_structures,
         "fire_contained":     bool(np.sum(np.array(obs.fire_grid) > 0.1) == 0),
         "model":              MODEL_NAME,
-    }))
-    sys.stdout.flush()
+    })
+    print(f"[END] {end_data}", flush=True)
 
     return final_score
 
@@ -198,12 +195,11 @@ def main():
 
     # Final summary
     avg = round(sum(all_scores.values()) / len(all_scores), 4)
-    print(json.dumps({
-        "type":    "[SUMMARY]",
+    summary_data = json.dumps({
         "scores":  all_scores,
         "average": avg,
-    }))
-    sys.stdout.flush()
+    })
+    print(f"[SUMMARY] {summary_data}", flush=True)
 
 
 if __name__ == "__main__":
