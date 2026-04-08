@@ -102,7 +102,9 @@ async def get_grader():
     total_cells = Config.GRID_SIZE * Config.GRID_SIZE
     struct_score = structures_remaining / max(initial_structures, 1)
     fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
-    total_score = float(np.clip((struct_score * 0.6) + (fire_score * 0.4), 0.0, 1.0))
+    raw_score = (struct_score * 0.6) + (fire_score * 0.4)
+    # Clamp strictly between 0 and 1 to satisfy validator
+    total_score = float(np.clip(raw_score, 0.001, 0.999))
     return {
         "score": total_score,
         "breakdown": {
@@ -149,7 +151,8 @@ async def run_baseline(difficulty: str = Query(default="medium")):
     total_cells = Config.GRID_SIZE * Config.GRID_SIZE
     struct_score = final_structures / max(initial_structures, 1)
     fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
-    grader_score = float(np.clip((struct_score * 0.6) + (fire_score * 0.4), 0.0, 1.0))
+    raw_score = (struct_score * 0.6) + (fire_score * 0.4)
+    grader_score = float(np.clip(raw_score, 0.001, 0.999))
     return {
         "difficulty": difficulty, "seed": 42, "steps_taken": steps,
         "total_reward": round(total_reward, 4), "done": obs.done,

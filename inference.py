@@ -115,7 +115,9 @@ def compute_grader_score(obs, initial_structures: int) -> float:
     structures_remaining = int(np.sum(obs.structure_grid))
     struct_score = structures_remaining / max(initial_structures, 1)
     fire_score   = max(0.0, 1.0 - (fire_cells / total_cells))
-    return round(float(np.clip((struct_score * 0.6) + (fire_score * 0.4), 0.0, 1.0)), 4)
+    raw = (struct_score * 0.6) + (fire_score * 0.4)
+    # Clamp strictly between 0 and 1 to satisfy validator
+    return round(float(np.clip(raw, 0.001, 0.999)), 4)
 
 
 def run_episode(difficulty: str, task_id: str, seed: int = 42):
