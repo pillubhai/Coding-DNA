@@ -35,16 +35,16 @@ observation_space:
 tasks:
   - id: easy
     description: "Low fire spread (ignition 0.05), 5 structures, slow wind."
-    score: 0.15
     steps: 1000
+    ideal_action: "contain"
   - id: medium
     description: "Moderate fire (ignition 0.12), 10 structures, variable wind."
-    score: 0.5
     steps: 1000
+    ideal_action: "suppress"
   - id: hard
     description: "Intense spread (ignition 0.20), frequent spot fires, 20 structures."
-    score: 0.9
     steps: 1000
+    ideal_action: "protect"
 
 scoring:
   reward_range: [0.0, 1.0]
