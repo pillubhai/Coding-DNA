@@ -110,8 +110,8 @@ def llm_action(obs):
 
 
 # Score bounds: strictly (0, 1) exclusive — HF validator rejects 0.0 and 1.0
-_SCORE_MIN = 0.001
-_SCORE_MAX = 0.999
+_SCORE_MIN = 1e-6
+_SCORE_MAX = 1 - 1e-6
 
 def compute_grader_score(obs, initial_structures: int) -> float:
     fire_arr = np.array(obs.fire_grid)
