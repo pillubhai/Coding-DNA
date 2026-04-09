@@ -103,8 +103,8 @@ async def get_grader():
     struct_score = structures_remaining / max(initial_structures, 1)
     fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
     raw_score = (struct_score * 0.6) + (fire_score * 0.4)
-    # Clamp strictly between 0 and 1 to satisfy validator
-    total_score = float(np.clip(raw_score, 0.001, 0.999))
+    # Strictly clamp between 0.01 and 0.99 to satisfy validator
+    total_score = float(max(0.01, min(0.99, raw_score)))
     return {
         "score": total_score,
         "breakdown": {

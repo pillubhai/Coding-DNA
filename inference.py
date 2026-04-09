@@ -116,8 +116,8 @@ def compute_grader_score(obs, initial_structures: int) -> float:
     struct_score = structures_remaining / max(initial_structures, 1)
     fire_score   = max(0.0, 1.0 - (fire_cells / total_cells))
     raw = (struct_score * 0.6) + (fire_score * 0.4)
-    # Clamp strictly between 0 and 1 to satisfy validator
-    return round(float(np.clip(raw, 0.001, 0.999)), 4)
+    # Strictly clamp between 0.01 and 0.99 to satisfy validator
+    return round(float(max(0.01, min(0.99, raw))), 4)
 
 
 def run_episode(difficulty: str, task_id: str, seed: int = 42):
@@ -165,6 +165,8 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         print(f"[STEP] {step_data}", flush=True)
 
     final_score = compute_grader_score(obs, initial_structures)
+    # Double-check clamp for safety
+    final_score = max(0.01, min(0.99, final_score))
 
     # ── [END] log ────────────────────────────────────────────────────────────
     end_data = json.dumps({
@@ -197,6 +199,8 @@ def main():
 
     # Final summary
     avg = round(sum(all_scores.values()) / len(all_scores), 4)
+    # Ensure average is also strictly within range
+    avg = max(0.01, min(0.99, avg))
     summary_data = json.dumps({
         "scores":  all_scores,
         "average": avg,
