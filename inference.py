@@ -109,9 +109,14 @@ def llm_action(obs):
         return greedy_agent.act(obs)
 
 
-# Score bounds: strictly inside (0, 1) with a safe margin after formatting.
-_SCORE_MIN = 0.05
-_SCORE_MAX = 0.94
+# Score bounds: keep every printed value strictly inside (0, 1).
+# The step log renders reward with 2 decimals, so 0.01 is the practical floor.
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
+
+
+def _clamp_score(value: float) -> float:
+    return float(max(_SCORE_MIN, min(_SCORE_MAX, float(value))))
 
 def compute_grader_score(obs, initial_structures: int) -> float:
     fire_arr = np.array(obs.fire_grid)
@@ -121,8 +126,8 @@ def compute_grader_score(obs, initial_structures: int) -> float:
     struct_score = structures_remaining / max(initial_structures, 1)
     fire_score   = 1.0 - (fire_cells / total_cells)
     raw = (struct_score * 0.6) + (fire_score * 0.4)
-    # Clamp to values that remain exclusive after JSON float formatting.
-    return float(max(_SCORE_MIN, min(_SCORE_MAX, float(raw))))
+    # Clamp right before serialization so the printed value never hits 0.0/1.0.
+    return _clamp_score(raw)
 
 
 def run_episode(difficulty: str, task_id: str, seed: int = 42):
@@ -157,15 +162,17 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         grader_score        = compute_grader_score(obs, initial_structures)
 
         # ── [STEP] log ───────────────────────────────────────────────────────
+        step_reward = _clamp_score(obs.reward)
+        step_grader_score = _clamp_score(grader_score)
         step_data = json.dumps({
             "task_id":            task_id,
             "step":               step,
-            "reward":             round(float(obs.reward), 4),
+            "reward":             round(step_reward, 3),
             "cumulative_reward":  round(float(cumulative_reward), 4),
             "done":               obs.done,
             "fire_cells":         fire_cells,
             "structures":         structures_now,
-            "grader_score":       round(grader_score, 3),
+            "grader_score":       round(step_grader_score, 3),
         })
         print(f"[STEP] {step_data}", flush=True)
 
@@ -204,7 +211,7 @@ def main():
     # Final summary
     avg = sum(all_scores.values()) / len(all_scores)
     # Ensure average also survives 4-decimal serialization inside (0, 1).
-    avg = round(max(_SCORE_MIN, min(_SCORE_MAX, avg)), 3)
+    avg = round(_clamp_score(avg), 3)
     summary_data = json.dumps({
         "scores":  all_scores,
         "average": avg,

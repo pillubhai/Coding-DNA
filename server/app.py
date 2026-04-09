@@ -20,9 +20,9 @@ except (ImportError, ValueError):
 
 import numpy as np
 
-# Score bounds: strictly inside (0, 1) with a safe margin after formatting.
-_SCORE_MIN = 0.05
-_SCORE_MAX = 0.94
+# Score bounds: keep every returned value strictly inside (0, 1).
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
 
 # ── Persistent single env instance ───────────────────────────────────────────
 env = WildfireEnv(difficulty="medium")

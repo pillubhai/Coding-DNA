@@ -53,7 +53,7 @@ class WildfireEnv(Environment):
         struct_score = structures_remaining / initial_structures
         fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
         raw_score = (struct_score * 0.6) + (fire_score * 0.4)
-        return float(max(0.05, min(0.94, raw_score)))
+        return float(max(0.01, min(0.99, raw_score)))
 
     def step(self, action: WildfireAction) -> WildfireObservation: # type: ignore
         """
