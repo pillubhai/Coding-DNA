@@ -54,7 +54,7 @@ A `WildfireObservation` object containing:
 The API server must be running to process environment dynamics.
 ```bash
 pip install -r requirements.txt
-python -m uvicorn server.app:app --host 0.0.0.0 --port 8000
+python -m uvicorn server.app:app --host 0.0.0.0 --port 7860
 ```
 
 ### 2. Start the Custom Visual Dashboard
@@ -68,7 +68,7 @@ Then, open **http://localhost:3000** in your web browser. Click **Reset** and **
 ### Docker / Online Deployment
 ```bash
 docker build -t wildfire-env .
-docker run -p 8000:8000 wildfire-env
+docker run -p 7860:7860 wildfire-env
 ```
 
 ### Endpoints

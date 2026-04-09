@@ -189,7 +189,8 @@ async def root():
 def main():
     """Entry point for the server."""
     import uvicorn
-    uvicorn.run("server.app:app", host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", "7860"))
+    uvicorn.run("server.app:app", host="0.0.0.0", port=port)
 
 
 if __name__ == "__main__":

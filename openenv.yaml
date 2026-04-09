@@ -54,7 +54,7 @@ constraints:
   max_vcpu: 2
 
 entrypoint: "server/app.py"
-port: 8000
+port: 7860
 
 docker:
   image: "python:3.11-slim"
