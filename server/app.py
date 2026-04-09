@@ -148,11 +148,14 @@ async def get_grader():
     raw_score = (struct_score * 0.6) + (fire_score * 0.4)
     # Hard-clamp: strictly within (0, 1) exclusive
     total_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 3)
+    # Also clamp breakdown scores so no sub-field ever returns 0.0 or 1.0
+    clamped_struct_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, struct_score))), 3)
+    clamped_fire_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, fire_score))), 3)
     return {
         "score": total_score,
         "breakdown": {
-            "structure_survival": round(struct_score, 3),
-            "fire_suppression": round(fire_score, 3),
+            "structure_survival": clamped_struct_score,
+            "fire_suppression": clamped_fire_score,
             "structures_remaining": structures_remaining,
             "initial_structures": initial_structures,
             "fire_cells": fire_cells,
@@ -163,7 +166,9 @@ async def get_grader():
 @app.post("/act")
 async def get_agent_action(request: Request):
     """Get the baseline agent's next action for the current observation."""
-    obs = env._get_observation(reward=0.0, done=False)
+    # Use _compute_normalized_score() — never returns 0.0 or 1.0
+    safe_reward = float(max(_SCORE_MIN, min(_SCORE_MAX, env._compute_normalized_score())))
+    obs = env._get_observation(reward=safe_reward, done=False)
     action = baseline_agent.act(obs)
     # Return raw actions list
     return {
@@ -198,9 +203,9 @@ async def run_baseline(difficulty: str = Query(default="medium")):
     grader_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 3)
     return {
         "difficulty": difficulty, "seed": 42, "steps_taken": steps,
-        "total_reward": round(total_reward, 3), "done": obs.done,
+        "total_reward": round(float(max(_SCORE_MIN, min(_SCORE_MAX, total_reward / max(steps, 1)))), 3), "done": obs.done,
         "initial_structures": initial_structures, "final_structures": final_structures,
-        "fire_cells_remaining": fire_cells, "grader_score": round(grader_score, 3),
+        "fire_cells_remaining": fire_cells, "grader_score": grader_score,
     }
 
 
