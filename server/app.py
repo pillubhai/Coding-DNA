@@ -97,6 +97,14 @@ async def get_state():
     return env.get_state()
 
 
+@app.get("/schema")
+async def get_schema():
+    return {
+        "action_schema": WildfireAction.model_json_schema(),
+        "observation_schema": WildfireObservation.model_json_schema(),
+    }
+
+
 @app.get("/grader")
 async def get_grader():
     state = env.get_state()
@@ -181,7 +189,7 @@ async def root():
 def main():
     """Entry point for the server."""
     import uvicorn
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+    uvicorn.run("server.app:app", host="0.0.0.0", port=8000)
 
 
 if __name__ == "__main__":

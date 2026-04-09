@@ -10,6 +10,13 @@ license: "BSD-3-Clause"
 
 env_type: "GridEnvironment"
 
+endpoints:
+  health: /health
+  reset: /reset
+  step: /step
+  state: /state
+  schema: /schema
+
 action_space:
   type: "object"
   description: "Actions for 3 units: [Tanker, Crew1, Crew2]"
@@ -27,20 +34,27 @@ observation_space:
 
 tasks:
   - id: easy
-    difficulty: 0.2
-    score: 0.15
     description: "Low fire spread (ignition 0.05), 5 structures, slow wind."
+    steps: 1000
   - id: medium
-    difficulty: 0.5
-    score: 0.5
     description: "Moderate fire (ignition 0.12), 10 structures, variable wind."
+    steps: 1000
   - id: hard
-    difficulty: 0.99
-    score: 0.9
     description: "Intense spread (ignition 0.20), frequent spot fires, 20 structures."
+    steps: 1000
+
+scoring:
+  reward_range: [0.0, 1.0]
+  success_threshold: 0.5
+  score_formula: mean(step_rewards)
+
+constraints:
+  max_runtime_seconds: 1200
+  max_memory_gb: 8
+  max_vcpu: 2
 
 entrypoint: "server/app.py"
-port: 7860
+port: 8000
 
 docker:
   image: "python:3.11-slim"
