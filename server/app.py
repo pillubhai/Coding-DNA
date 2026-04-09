@@ -83,9 +83,9 @@ async def step_env(request: Request):
 async def get_tasks():
     return {
         "tasks": [
-            {"id": "easy", "steps": 1000, "ideal_action": "contain", "description": "Low ignition (0.05), 5 structures, slow wind.", "config": {"ignition_prob": Config.EASY["ignition_prob"], "spot_fire_prob": Config.EASY["spot_fire_prob"], "num_structures": Config.EASY["num_structures"]}},
-            {"id": "medium", "steps": 1000, "ideal_action": "suppress", "description": "Moderate fire (0.12), 10 structures, variable wind.", "config": {"ignition_prob": Config.MEDIUM["ignition_prob"], "spot_fire_prob": Config.MEDIUM["spot_fire_prob"], "num_structures": Config.MEDIUM["num_structures"]}},
-            {"id": "hard", "steps": 1000, "ideal_action": "protect", "description": "Intense spread (ignition 0.20), frequent spot fires, 20 structures.", "config": {"ignition_prob": Config.HARD["ignition_prob"], "spot_fire_prob": Config.HARD["spot_fire_prob"], "num_structures": Config.HARD["num_structures"]}},
+            {"id": "easy", "score": 0.15, "steps": 1000, "ideal_action": "contain", "description": "Low ignition (0.05), 5 structures, slow wind.", "config": {"ignition_prob": Config.EASY["ignition_prob"], "spot_fire_prob": Config.EASY["spot_fire_prob"], "num_structures": Config.EASY["num_structures"]}},
+            {"id": "medium", "score": 0.5, "steps": 1000, "ideal_action": "suppress", "description": "Moderate fire (0.12), 10 structures, variable wind.", "config": {"ignition_prob": Config.MEDIUM["ignition_prob"], "spot_fire_prob": Config.MEDIUM["spot_fire_prob"], "num_structures": Config.MEDIUM["num_structures"]}},
+            {"id": "hard", "score": 0.9, "steps": 1000, "ideal_action": "protect", "description": "Intense spread (ignition 0.20), frequent spot fires, 20 structures.", "config": {"ignition_prob": Config.HARD["ignition_prob"], "spot_fire_prob": Config.HARD["spot_fire_prob"], "num_structures": Config.HARD["num_structures"]}},
         ],
         "action_schema": WildfireAction.model_json_schema(),
         "observation_schema": WildfireObservation.model_json_schema(),
