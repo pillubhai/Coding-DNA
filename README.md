@@ -1,3 +1,13 @@
+---
+title: wildfire-containment-v0
+emoji: "🔥"
+colorFrom: red
+colorTo: orange
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # WildfireContainment-v0
 
 ## Overview
