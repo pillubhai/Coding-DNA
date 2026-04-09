@@ -83,9 +83,9 @@ async def step_env(request: Request):
 async def get_tasks():
     return {
         "tasks": [
-            {"id": "easy", "difficulty": 0.2, "description": "Low ignition (0.05), 5 structures.", "config": {"ignition_prob": Config.EASY["ignition_prob"], "spot_fire_prob": Config.EASY["spot_fire_prob"], "num_structures": Config.EASY["num_structures"]}},
-            {"id": "medium", "difficulty": 0.5, "description": "Moderate fire (0.12), 10 structures.", "config": {"ignition_prob": Config.MEDIUM["ignition_prob"], "spot_fire_prob": Config.MEDIUM["spot_fire_prob"], "num_structures": Config.MEDIUM["num_structures"]}},
-            {"id": "hard", "difficulty": 0.99, "description": "High ignition (0.20), frequent spot fires, 20 structures.", "config": {"ignition_prob": Config.HARD["ignition_prob"], "spot_fire_prob": Config.HARD["spot_fire_prob"], "num_structures": Config.HARD["num_structures"]}},
+            {"id": "easy", "score": 0.15, "description": "Low ignition (0.05), 5 structures.", "config": {"ignition_prob": Config.EASY["ignition_prob"], "spot_fire_prob": Config.EASY["spot_fire_prob"], "num_structures": Config.EASY["num_structures"]}},
+            {"id": "medium", "score": 0.5, "description": "Moderate fire (0.12), 10 structures.", "config": {"ignition_prob": Config.MEDIUM["ignition_prob"], "spot_fire_prob": Config.MEDIUM["spot_fire_prob"], "num_structures": Config.MEDIUM["num_structures"]}},
+            {"id": "hard", "score": 0.9, "description": "High ignition (0.20), frequent spot fires, 20 structures.", "config": {"ignition_prob": Config.HARD["ignition_prob"], "spot_fire_prob": Config.HARD["spot_fire_prob"], "num_structures": Config.HARD["num_structures"]}},
         ],
         "action_schema": WildfireAction.model_json_schema(),
         "observation_schema": WildfireObservation.model_json_schema(),
