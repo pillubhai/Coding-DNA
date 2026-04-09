@@ -100,9 +100,39 @@ async def get_state():
 @app.get("/schema")
 async def get_schema():
     return {
-        "action_schema": WildfireAction.model_json_schema(),
-        "observation_schema": WildfireObservation.model_json_schema(),
+        "action": WildfireAction.model_json_schema(),
+        "observation": WildfireObservation.model_json_schema(),
+        "state": {
+            "type": "object",
+            "properties": {
+                "episode_id": {"type": "string"},
+                "step": {"type": "integer"},
+                "difficulty": {"type": "string"},
+                "grid_size": {"type": "integer"},
+                "max_steps": {"type": "integer"},
+                "wind_dir": {"type": "integer"},
+                "wind_speed": {"type": "number"},
+                "fire_cells": {"type": "integer"},
+                "structures_remaining": {"type": "integer"},
+                "initial_structures": {"type": "integer"},
+                "terminated": {"type": "boolean"},
+                "cumulative_reward": {"type": "number"},
+            },
+        },
     }
+
+
+@app.get("/metadata")
+async def get_metadata():
+    return {
+        "name": "WildfireContainment-v0",
+        "description": "A dynamic wildfire suppression environment for agentic RL.",
+    }
+
+
+@app.post("/mcp")
+async def get_mcp():
+    return {"jsonrpc": "2.0", "id": None, "result": {"status": "ok"}}
 
 
 @app.get("/grader")
@@ -175,7 +205,7 @@ async def run_baseline(difficulty: str = Query(default="medium")):
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "env": "WildfireContainment-v0", "version": "0.1.0"}
+    return {"status": "healthy", "env": "WildfireContainment-v0", "version": "0.1.0"}
 
 
 @app.get("/")
