@@ -38,6 +38,22 @@ class WildfireEnv(Environment):
 
         return self._get_observation(reward=0.0, done=False)
 
+    def _compute_normalized_score(self) -> float:
+        """
+        Return a validator-safe score in strict (0, 1) based on current env state.
+        This keeps OpenEnv-facing rewards compatible with score=mean(step_rewards).
+        """
+        fire_cells = int(np.sum(self._env_state.fire > 0.1))
+        structures_remaining = int(np.sum(self._env_state.structures))
+        diff_conf = getattr(Config, self.difficulty.upper())
+        initial_structures = max(int(diff_conf["num_structures"]), 1)
+        total_cells = Config.GRID_SIZE * Config.GRID_SIZE
+
+        struct_score = structures_remaining / initial_structures
+        fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
+        raw_score = (struct_score * 0.6) + (fire_score * 0.4)
+        return float(max(0.0001, min(0.9999, raw_score)))
+
     def step(self, action: WildfireAction) -> WildfireObservation: # type: ignore
         """
         Execute one step of the simulation.
@@ -83,10 +99,15 @@ class WildfireEnv(Environment):
             reward -= 10.0 # Total loss penalty
             done = True
 
-        self._env_state.total_reward += reward
-        return self._get_observation(reward=reward, done=done)
+        normalized_reward = self._compute_normalized_score()
+        self._env_state.total_reward += normalized_reward
+        return self._get_observation(
+            reward=normalized_reward,
+            done=done,
+            extra_info={"raw_reward": float(reward)},
+        )
 
-    def _get_observation(self, reward: float, done: bool) -> WildfireObservation:
+    def _get_observation(self, reward: float, done: bool, extra_info: Optional[dict] = None) -> WildfireObservation:
         """
         Construct the Observation object from internal state.
         """
@@ -114,7 +135,8 @@ class WildfireEnv(Environment):
             info={
                 "step": self._state.step_count,
                 "episode_id": self._state.episode_id,
-                "difficulty": self.difficulty
+                "difficulty": self.difficulty,
+                **(extra_info or {}),
             }
         )
 

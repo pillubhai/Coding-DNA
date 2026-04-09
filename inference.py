@@ -109,9 +109,9 @@ def llm_action(obs):
         return greedy_agent.act(obs)
 
 
-# Score bounds: strictly (0, 1) exclusive — HF validator rejects 0.0 and 1.0
-_SCORE_MIN = 1e-6
-_SCORE_MAX = 1 - 1e-6
+# Score bounds: strictly (0, 1) exclusive even after 4-decimal serialization.
+_SCORE_MIN = 0.0001
+_SCORE_MAX = 0.9999
 
 def compute_grader_score(obs, initial_structures: int) -> float:
     fire_arr = np.array(obs.fire_grid)
@@ -121,9 +121,8 @@ def compute_grader_score(obs, initial_structures: int) -> float:
     struct_score = structures_remaining / max(initial_structures, 1)
     fire_score   = 1.0 - (fire_cells / total_cells)
     raw = (struct_score * 0.6) + (fire_score * 0.4)
-    # Hard-clamp: must be strictly between 0 and 1, never exactly 0.0 or 1.0
-    clamped = max(_SCORE_MIN, min(_SCORE_MAX, float(raw)))
-    return round(clamped, 4)
+    # Clamp to values that remain exclusive after JSON float formatting.
+    return float(max(_SCORE_MIN, min(_SCORE_MAX, float(raw))))
 
 
 def run_episode(difficulty: str, task_id: str, seed: int = 42):
@@ -166,13 +165,11 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
             "done":               obs.done,
             "fire_cells":         fire_cells,
             "structures":         structures_now,
-            "grader_score":       grader_score,
+            "grader_score":       round(grader_score, 4),
         })
         print(f"[STEP] {step_data}", flush=True)
 
     final_score = compute_grader_score(obs, initial_structures)
-    # Hard-clamp: strictly within (0, 1) exclusive
-    final_score = round(max(_SCORE_MIN, min(_SCORE_MAX, final_score)), 4)
 
     # ── [END] log ────────────────────────────────────────────────────────────
     end_data = json.dumps({
@@ -180,7 +177,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         "difficulty":         difficulty,
         "total_steps":        step,
         "cumulative_reward":  round(float(cumulative_reward), 4),
-        "final_grader_score": final_score,
+        "final_grader_score": round(final_score, 4),
         "structures_saved":   int(np.sum(obs.structure_grid)),
         "initial_structures": initial_structures,
         "fire_contained":     bool(np.sum(np.array(obs.fire_grid) > 0.1) == 0),
@@ -188,7 +185,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
     })
     print(f"[END] {end_data}", flush=True)
 
-    return final_score
+    return round(final_score, 4)
 
 
 def main():
@@ -205,7 +202,7 @@ def main():
 
     # Final summary
     avg = sum(all_scores.values()) / len(all_scores)
-    # Ensure average is also strictly within (0, 1) exclusive
+    # Ensure average also survives 4-decimal serialization inside (0, 1).
     avg = round(max(_SCORE_MIN, min(_SCORE_MAX, avg)), 4)
     summary_data = json.dumps({
         "scores":  all_scores,
