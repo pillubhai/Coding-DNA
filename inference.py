@@ -193,6 +193,7 @@ def main():
         ("easy",   "easy"),
         ("medium", "medium"),
         ("hard",   "hard"),
+        ("extreme", "extreme"),
     ]
 
     all_scores = {}

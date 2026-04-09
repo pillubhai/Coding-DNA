@@ -36,3 +36,11 @@ class Config:
         "spot_fire_prob": 0.15,
         "num_structures": 20
     }
+
+    EXTREME = {
+        "ignition_prob": 0.25,
+        "wind_volatility": 0.25,
+        "fuel_density": 0.95,
+        "spot_fire_prob": 0.25,
+        "num_structures": 25
+    }

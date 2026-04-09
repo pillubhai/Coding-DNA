@@ -22,6 +22,8 @@ def grade_action(task_id: str, action: str, signals: dict) -> float:
         raw_score = _grade_medium(action, signals)
     elif task_id == "hard":
         raw_score = _grade_hard(action, signals)
+    elif task_id == "extreme":
+        raw_score = _grade_extreme(action, signals)
 
     return round(min(max(raw_score, 0.05), 0.94), 3)
 
@@ -55,3 +57,12 @@ def _grade_hard(action: str, signals: dict) -> float:
         return round(0.5 + 0.1 * fire_pressure, 3)
     return 0.12
 
+
+def _grade_extreme(action: str, signals: dict) -> float:
+    fire_pressure = signals.get("fire_pressure", 0.5)
+    structure_risk = signals.get("structure_risk", 0.5)
+    if action == "protect":
+        return round(0.72 + 0.12 * fire_pressure + 0.08 * structure_risk, 3)
+    if action == "suppress":
+        return round(0.48 + 0.1 * fire_pressure, 3)
+    return 0.14
