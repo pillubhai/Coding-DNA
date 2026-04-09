@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 inference.py — LLM Baseline Agent for WildfireContainment-v0
 Root-level inference script. Required by OpenEnv Hackathon spec.

@@ -31,7 +31,8 @@
       "Bash(@curl *)",
       "Bash(del *)",
       "Bash(rmdir *)",
-      "Bash(uv *)"
+      "Bash(uv *)",
+      "WebSearch"
     ]
   },
   "$version": 3
