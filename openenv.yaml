@@ -28,12 +28,15 @@ observation_space:
 tasks:
   - id: easy
     difficulty: 0.2
+    score: 0.15
     description: "Low fire spread (ignition 0.05), 5 structures, slow wind."
   - id: medium
     difficulty: 0.5
+    score: 0.5
     description: "Moderate fire (ignition 0.12), 10 structures, variable wind."
   - id: hard
     difficulty: 1.0
+    score: 0.9
     description: "Intense spread (ignition 0.20), frequent spot fires, 20 structures."
 
 entrypoint: "server/app.py"

@@ -109,16 +109,21 @@ def llm_action(obs):
         return greedy_agent.act(obs)
 
 
+# Score bounds: strictly (0, 1) exclusive — HF validator rejects 0.0 and 1.0
+_SCORE_MIN = 0.001
+_SCORE_MAX = 0.999
+
 def compute_grader_score(obs, initial_structures: int) -> float:
     fire_arr = np.array(obs.fire_grid)
     fire_cells = int(np.sum(fire_arr > 0.1))
     total_cells = Config.GRID_SIZE * Config.GRID_SIZE
-    structures_remaining = int(np.sum(obs.structure_grid))
+    structures_remaining = int(np.sum(np.array(obs.structure_grid)))
     struct_score = structures_remaining / max(initial_structures, 1)
-    fire_score   = max(0.0, 1.0 - (fire_cells / total_cells))
+    fire_score   = 1.0 - (fire_cells / total_cells)
     raw = (struct_score * 0.6) + (fire_score * 0.4)
-    # Strictly clamp between 0.01 and 0.99 to satisfy validator
-    return round(float(max(0.01, min(0.99, raw))), 4)
+    # Hard-clamp: must be strictly between 0 and 1, never exactly 0.0 or 1.0
+    clamped = max(_SCORE_MIN, min(_SCORE_MAX, float(raw)))
+    return round(clamped, 4)
 
 
 def run_episode(difficulty: str, task_id: str, seed: int = 42):
@@ -166,8 +171,8 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         print(f"[STEP] {step_data}", flush=True)
 
     final_score = compute_grader_score(obs, initial_structures)
-    # Double-check clamp for safety
-    final_score = max(0.01, min(0.99, final_score))
+    # Hard-clamp: strictly within (0, 1) exclusive
+    final_score = round(max(_SCORE_MIN, min(_SCORE_MAX, final_score)), 4)
 
     # ── [END] log ────────────────────────────────────────────────────────────
     end_data = json.dumps({
@@ -199,9 +204,9 @@ def main():
         all_scores[task_id] = score
 
     # Final summary
-    avg = round(sum(all_scores.values()) / len(all_scores), 4)
-    # Ensure average is also strictly within range
-    avg = max(0.01, min(0.99, avg))
+    avg = sum(all_scores.values()) / len(all_scores)
+    # Ensure average is also strictly within (0, 1) exclusive
+    avg = round(max(_SCORE_MIN, min(_SCORE_MAX, avg)), 4)
     summary_data = json.dumps({
         "scores":  all_scores,
         "average": avg,

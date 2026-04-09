@@ -20,6 +20,10 @@ except (ImportError, ValueError):
 
 import numpy as np
 
+# Score bounds: strictly (0, 1) exclusive — HF validator rejects 0.0 and 1.0
+_SCORE_MIN = 0.001
+_SCORE_MAX = 0.999
+
 # ── Persistent single env instance ───────────────────────────────────────────
 env = WildfireEnv(difficulty="medium")
 baseline_agent = BaselineAgent()
@@ -103,8 +107,8 @@ async def get_grader():
     struct_score = structures_remaining / max(initial_structures, 1)
     fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
     raw_score = (struct_score * 0.6) + (fire_score * 0.4)
-    # Strictly clamp between 0.01 and 0.99 to satisfy validator
-    total_score = float(max(0.01, min(0.99, raw_score)))
+    # Hard-clamp: strictly within (0, 1) exclusive
+    total_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 4)
     return {
         "score": total_score,
         "breakdown": {
@@ -152,7 +156,7 @@ async def run_baseline(difficulty: str = Query(default="medium")):
     struct_score = final_structures / max(initial_structures, 1)
     fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
     raw_score = (struct_score * 0.6) + (fire_score * 0.4)
-    grader_score = float(np.clip(raw_score, 0.001, 0.999))
+    grader_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 4)
     return {
         "difficulty": difficulty, "seed": 42, "steps_taken": steps,
         "total_reward": round(total_reward, 4), "done": obs.done,
