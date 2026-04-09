@@ -35,7 +35,7 @@ tasks:
     score: 0.5
     description: "Moderate fire (ignition 0.12), 10 structures, variable wind."
   - id: hard
-    difficulty: 1.0
+    difficulty: 0.99
     score: 0.9
     description: "Intense spread (ignition 0.20), frequent spot fires, 20 structures."
 
