@@ -36,7 +36,8 @@ class WildfireEnv(Environment):
         self._env_state.total_reward = 0.0
         self._state = State(episode_id=str(uuid4()), step_count=0)
 
-        return self._get_observation(reward=0.0, done=False)
+        # Return a strict interior reward so reset never leaks a boundary value.
+        return self._get_observation(reward=self._compute_normalized_score(), done=False)
 
     def _compute_normalized_score(self) -> float:
         """
