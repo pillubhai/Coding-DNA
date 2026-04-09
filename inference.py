@@ -110,8 +110,8 @@ def llm_action(obs):
 
 
 # Score bounds: strictly inside (0, 1) with a safe margin after formatting.
-_SCORE_MIN = 0.01
-_SCORE_MAX = 0.99
+_SCORE_MIN = 0.05
+_SCORE_MAX = 0.94
 
 def compute_grader_score(obs, initial_structures: int) -> float:
     fire_arr = np.array(obs.fire_grid)
