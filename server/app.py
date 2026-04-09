@@ -20,9 +20,9 @@ except (ImportError, ValueError):
 
 import numpy as np
 
-# Score bounds: strictly (0, 1) exclusive even after 4-decimal serialization.
-_SCORE_MIN = 0.0001
-_SCORE_MAX = 0.9999
+# Score bounds: strictly inside (0, 1) with a safe margin after formatting.
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
 
 # ── Persistent single env instance ───────────────────────────────────────────
 env = WildfireEnv(difficulty="medium")
@@ -116,12 +116,12 @@ async def get_grader():
     fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
     raw_score = (struct_score * 0.6) + (fire_score * 0.4)
     # Hard-clamp: strictly within (0, 1) exclusive
-    total_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 4)
+    total_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 3)
     return {
         "score": total_score,
         "breakdown": {
-            "structure_survival": round(struct_score, 4),
-            "fire_suppression": round(fire_score, 4),
+            "structure_survival": round(struct_score, 3),
+            "fire_suppression": round(fire_score, 3),
             "structures_remaining": structures_remaining,
             "initial_structures": initial_structures,
             "fire_cells": fire_cells,
@@ -164,12 +164,12 @@ async def run_baseline(difficulty: str = Query(default="medium")):
     struct_score = final_structures / max(initial_structures, 1)
     fire_score = max(0.0, 1.0 - (fire_cells / total_cells))
     raw_score = (struct_score * 0.6) + (fire_score * 0.4)
-    grader_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 4)
+    grader_score = round(float(max(_SCORE_MIN, min(_SCORE_MAX, raw_score))), 3)
     return {
         "difficulty": difficulty, "seed": 42, "steps_taken": steps,
-        "total_reward": round(total_reward, 4), "done": obs.done,
+        "total_reward": round(total_reward, 3), "done": obs.done,
         "initial_structures": initial_structures, "final_structures": final_structures,
-        "fire_cells_remaining": fire_cells, "grader_score": round(grader_score, 4),
+        "fire_cells_remaining": fire_cells, "grader_score": round(grader_score, 3),
     }
 
 

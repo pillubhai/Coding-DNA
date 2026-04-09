@@ -109,9 +109,9 @@ def llm_action(obs):
         return greedy_agent.act(obs)
 
 
-# Score bounds: strictly (0, 1) exclusive even after 4-decimal serialization.
-_SCORE_MIN = 0.0001
-_SCORE_MAX = 0.9999
+# Score bounds: strictly inside (0, 1) with a safe margin after formatting.
+_SCORE_MIN = 0.01
+_SCORE_MAX = 0.99
 
 def compute_grader_score(obs, initial_structures: int) -> float:
     fire_arr = np.array(obs.fire_grid)
@@ -165,7 +165,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
             "done":               obs.done,
             "fire_cells":         fire_cells,
             "structures":         structures_now,
-            "grader_score":       round(grader_score, 4),
+            "grader_score":       round(grader_score, 3),
         })
         print(f"[STEP] {step_data}", flush=True)
 
@@ -177,7 +177,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         "difficulty":         difficulty,
         "total_steps":        step,
         "cumulative_reward":  round(float(cumulative_reward), 4),
-        "final_grader_score": round(final_score, 4),
+        "final_grader_score": round(final_score, 3),
         "structures_saved":   int(np.sum(obs.structure_grid)),
         "initial_structures": initial_structures,
         "fire_contained":     bool(np.sum(np.array(obs.fire_grid) > 0.1) == 0),
@@ -185,7 +185,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
     })
     print(f"[END] {end_data}", flush=True)
 
-    return round(final_score, 4)
+    return round(final_score, 3)
 
 
 def main():
@@ -203,7 +203,7 @@ def main():
     # Final summary
     avg = sum(all_scores.values()) / len(all_scores)
     # Ensure average also survives 4-decimal serialization inside (0, 1).
-    avg = round(max(_SCORE_MIN, min(_SCORE_MAX, avg)), 4)
+    avg = round(max(_SCORE_MIN, min(_SCORE_MAX, avg)), 3)
     summary_data = json.dumps({
         "scores":  all_scores,
         "average": avg,
