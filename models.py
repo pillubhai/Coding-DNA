@@ -28,5 +28,5 @@ class WildfireObservation(Observation):
     wind_speed: float = Field(..., description="Current wind speed")
     
     done: bool = Field(default=False)
-    reward: float = Field(default=0.0)
+    reward: float = Field(default=0.01)
     info: Dict = Field(default_factory=dict)
