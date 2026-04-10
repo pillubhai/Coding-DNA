@@ -147,6 +147,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         "initial_structures": initial_structures,
         "grid_size":          Config.GRID_SIZE,
         "max_steps":          _TASK_STEPS,
+        "score":              0.5,
         "model":              MODEL_NAME,
     })
     print(f"[START] {start_data}", flush=True)
@@ -164,7 +165,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
 
         # ── [STEP] log ───────────────────────────────────────────────────────
         step_reward = _clamp_score(obs.reward)
-        step_grader_score = _clamp_score(grader_score)
+        step_score = _clamp_score(grader_score)
         step_data = json.dumps({
             "task_id":            task_id,
             "step":               step,
@@ -173,7 +174,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
             "done":               obs.done,
             "fire_cells":         fire_cells,
             "structures":         structures_now,
-            "grader_score":       round(step_grader_score, 3),
+            "score":              round(step_score, 3),
         })
         print(f"[STEP] {step_data}", flush=True)
 
@@ -185,7 +186,7 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         "difficulty":         difficulty,
         "total_steps":        step,
         "cumulative_reward":  round(float(cumulative_reward), 4),
-        "final_grader_score": round(final_score, 3),
+        "score":              round(final_score, 3),
         "structures_saved":   int(np.sum(obs.structure_grid)),
         "initial_structures": initial_structures,
         "fire_contained":     bool(np.sum(np.array(obs.fire_grid) > 0.1) == 0),
