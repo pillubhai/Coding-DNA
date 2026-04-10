@@ -1,21 +1,56 @@
+/* ============================================
+   WildfireContainment-v0 | Advanced UI Styles
+   ============================================ */
+
+/* Reset & Base */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Inter', -apple-system, sans-serif;
+html {
+    scroll-behavior: smooth;
 }
 
-/* Grid cells */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Particle Canvas */
+#fire-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Grid Cells */
 .cell {
     position: relative;
-    transition: background-color 0.3s ease;
+    transition: all 0.2s ease;
+    cursor: crosshair;
+    overflow: hidden;
 }
 
+.cell:hover {
+    transform: scale(1.1);
+    z-index: 10;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+/* Fire Cell Animation */
 .cell-fire {
-    animation: firePulse 1.5s ease-in-out infinite;
+    animation: firePulse 0.8s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6), inset 0 0 4px rgba(255, 165, 0, 0.4);
 }
 
 @keyframes firePulse {
@@ -23,32 +58,260 @@ body {
     0%,
     100% {
         opacity: 1;
+        transform: scale(1);
     }
 
     50% {
-        opacity: 0.85;
+        opacity: 0.8;
+        transform: scale(1.02);
     }
 }
 
-/* Overlay transition */
+/* Structure Cell Animation */
+.cell-structure {
+    animation: structureGlow 2s ease-in-out infinite;
+}
+
+@keyframes structureGlow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 4px rgba(6, 182, 212, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 8px rgba(6, 182, 212, 0.8);
+    }
+}
+
+/* Unit Cell Animation */
+.cell-unit {
+    animation: unitBounce 1s ease-in-out infinite;
+}
+
+@keyframes unitBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+/* Water/Moisture Cell */
+.cell-water {
+    animation: waterShimmer 2s ease-in-out infinite;
+}
+
+@keyframes waterShimmer {
+
+    0%,
+    100% {
+        filter: brightness(1);
+    }
+
+    50% {
+        filter: brightness(1.2);
+    }
+}
+
+/* Wind Arrow Animation */
+#wind-arrow {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Overlay Modal */
 #game-overlay {
     transition: opacity 0.4s ease;
 }
 
-/* Custom scrollbar */
+#overlay-card {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+#game-overlay.opacity-0 #overlay-card {
+    transform: scale(0.9);
+}
+
+/* Chart Containers */
+canvas {
+    max-width: 100%;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+    border-radius: 4px;
+    transition: background 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* Speed Slider Styling */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-track {
+    background: rgba(15, 23, 42, 0.8);
+    height: 6px;
+    border-radius: 3px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    margin-top: -6px;
+    box-shadow: 0 0 10px rgba(249, 115, 22, 0.5);
+    transition: transform 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Select Dropdown */
+select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Tooltip for Grid Hover */
+.grid-tooltip {
+    position: fixed;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #e2e8f0;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.2s;
+}
+
+/* Loading Spinner */
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top: 3px solid #f97316;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Card Hover Effects */
+.bg-dark-800 {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.bg-dark-800:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Button Ripple Effect */
+button {
+    position: relative;
+    overflow: hidden;
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+button:active::after {
+    width: 200px;
+    height: 200px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1280px) {
+    .grid {
+        grid-template-columns: repeat(16, 1fr);
+        grid-template-rows: repeat(16, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(12, 1fr);
+        grid-template-rows: repeat(12, 1fr);
+    }
+
+    header {
+        padding: 0.5rem 1rem;
+    }
+
+    main {
+        padding: 1rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+
+    .bg-dark-800 {
+        background: white;
+        border: 1px solid #ccc;
+    }
+
+    #fire-particles,
+    .cell-fire,
+    .cell-structure,
+    .cell-unit {
+        animation: none !important;
+    }
 }
