@@ -113,7 +113,6 @@ def llm_action(obs):
 # The step log renders reward with 2 decimals, so 0.01 is the practical floor.
 _SCORE_MIN = 0.01
 _SCORE_MAX = 0.99
-_TASK_STEPS = 3
 
 
 def _clamp_score(value: float) -> float:
@@ -146,13 +145,13 @@ def run_episode(difficulty: str, task_id: str, seed: int = 42):
         "seed":               seed,
         "initial_structures": initial_structures,
         "grid_size":          Config.GRID_SIZE,
-        "max_steps":          _TASK_STEPS,
+        "max_steps":          Config.MAX_STEPS,
         "model":              MODEL_NAME,
     })
     print(f"[START] {start_data}", flush=True)
 
     step = 0
-    while not obs.done and step < _TASK_STEPS:
+    while not obs.done and step < Config.MAX_STEPS:
         action = llm_action(obs)
         obs    = env.step(action)
         cumulative_reward += obs.reward
