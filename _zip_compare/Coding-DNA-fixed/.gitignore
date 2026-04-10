@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.png
+*.zip
+*.egg-info/
+.env
+.qwen/
+.qodo/
